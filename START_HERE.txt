@@ -1,0 +1,29 @@
+高校野球監督ゲーム 3年間プレイ検証版 v0.2.0
+
+最初に読むもの
+1. docs/BEGINNER_GUIDE.html
+2. README.md
+3. TRIAL_CHECKLIST.txt
+
+ローカル起動
+1. Node.js 22をインストール
+2. Windowsは START_LOCAL_WINDOWS.bat をダブルクリック
+3. macOS/Linuxはターミナルで ./start-local.sh
+4. ブラウザで http://localhost:4173
+
+手動で実行する場合
+npm install
+npm test
+npm run dev
+
+Cloudflare Pages設定
+Production branch: main
+Framework preset: None
+Build command: npm run build
+Build output directory: dist
+Root directory: 空欄
+
+公開・更新手順の詳細
+・docs/BEGINNER_GUIDE.html
+・docs/BEGINNER_GUIDE.md
+・docs/CLOUDFLARE_PAGES.md

@@ -1,0 +1,25 @@
+{
+  "name": "kokoyakyu-manager-playtest-monorepo",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build:ts": "tsc -p tsconfig.build.json",
+    "build": "npm run clean && npm run build:ts && node scripts/copy-static.mjs",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "dev": "npm run build && node scripts/serve.mjs",
+    "simulate": "npm run build && node scripts/run-cli-simulation.mjs"
+  },
+  "devDependencies": {
+    "typescript": "5.8.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
