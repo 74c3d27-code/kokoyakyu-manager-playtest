@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#102a20">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <title>高校野球ゲーム 端末セルフテスト</title>
+  <link rel="stylesheet" href="/self-test/assets/styles.css">
+</head>
+<body>
+  <header class="topbar"><div><p>DEVICE CHECK</p><h1>端末セルフテスト</h1></div><nav><a href="/manager/">監督プレイ</a><a href="/lab/">検証室</a><a href="/">入口</a></nav></header>
+  <main>
+    <section class="panel intro"><div><h2>Node.jsを使わず、ブラウザだけで確認します</h2><p>16校データ、52週カレンダー、3年間156週の完走、同一シードの再現性、ブラウザ保存、Web Workerを順に検査します。</p></div><button id="run-tests" type="button">テストを実行</button></section>
+    <section class="panel device-panel"><h2>端末情報</h2><dl id="device-info"></dl></section>
+    <section class="panel"><div class="result-head"><div><h2>検査結果</h2><p id="summary">未実行</p></div><button id="copy-report" class="secondary" type="button" disabled>結果をコピー</button></div><progress id="progress" max="8" value="0"></progress><div id="test-list" class="test-list" aria-live="polite"></div></section>
+    <section class="panel help"><h2>スマートフォンで見るポイント</h2><p>縦向きと横向きの両方で、このページを上下へスクロールできること、各ボタンを押せること、監督画面の下部ナビゲーションと「今週を進める」が重ならないことをご確認ください。</p></section>
+  </main>
+  <script type="module" src="/self-test/main.js"></script><script src="/assets/register-sw.js" defer></script>
+</body>
+</html>

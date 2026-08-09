@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b2a20">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <meta name="description" content="高校野球監督ゲーム向け共通エンジンのシミュレーション検証室">
+  <title>高校野球シミュレーション検証室</title>
+  <link rel="stylesheet" href="/lab/assets/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">KOKOYAKYU ENGINE LAB</p>
+      <h1>高校野球シミュレーション検証室</h1>
+      <p class="hero-copy">16校の春・夏・秋を繰り返し、能力分布、シード効果、公私の優勝比率、投手負荷を確認します。</p>
+    </div>
+    <div class="hero-side">
+      <div class="version-badge">v0.3.0</div>
+      <nav class="hero-links" aria-label="関連画面">
+        <a href="/manager/">監督プレイ</a>
+        <a href="/self-test/">端末テスト</a>
+        <a href="/">入口</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel control-panel" aria-labelledby="control-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">RUN</p>
+          <h2 id="control-title">検証条件</h2>
+        </div>
+        <p>最大5,000シーズンまで、ブラウザ内だけで処理します。</p>
+      </div>
+
+      <form id="simulation-form" class="control-grid">
+        <label>
+          <span>基準シード</span>
+          <input id="seed-input" name="seed" value="HS-2026-STARTER" maxlength="80" required>
+        </label>
+        <label>
+          <span>1回あたりの年数</span>
+          <input id="years-input" name="years" type="number" min="1" max="100" value="10" required>
+        </label>
+        <label>
+          <span>反復回数</span>
+          <input id="repetitions-input" name="repetitions" type="number" min="1" max="100" value="10" required>
+        </label>
+        <div class="button-row">
+          <button id="run-button" class="primary-button" type="submit">シミュレーション開始</button>
+          <button id="cancel-button" class="secondary-button" type="button" disabled>中止</button>
+        </div>
+      </form>
+
+      <div id="run-status" class="run-status" aria-live="polite">
+        <div class="status-row">
+          <span id="status-text">待機中</span>
+          <span id="season-count">100シーズン</span>
+        </div>
+        <progress id="progress-bar" max="100" value="0"></progress>
+        <p id="error-message" class="error-message" hidden></p>
+      </div>
+    </section>
+
+    <section id="results-section" class="panel" aria-labelledby="results-title" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">RESULT</p>
+          <h2 id="results-title">検証結果</h2>
+        </div>
+        <button id="export-button" class="secondary-button" type="button">結果JSONを書き出す</button>
+      </div>
+      <div id="summary-cards" class="metric-grid"></div>
+      <div class="result-layout">
+        <article class="subpanel">
+          <h3>夏の優勝回数</h3>
+          <div id="champion-bars" class="bar-list"></div>
+        </article>
+        <article class="subpanel">
+          <h3>能力分布</h3>
+          <div id="ability-summary"></div>
+        </article>
+      </div>
+      <article class="subpanel">
+        <div class="subpanel-heading">
+          <h3>学校別集計</h3>
+          <p>夏優勝、通算勝数の順</p>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>学校</th><th>区分</th><th>試合</th><th>勝</th><th>敗</th><th>春優勝</th><th>夏優勝</th><th>秋優勝</th>
+              </tr>
+            </thead>
+            <tbody id="aggregate-table-body"></tbody>
+          </table>
+        </div>
+      </article>
+      <article class="subpanel diagnostic-panel">
+        <h3>自動診断</h3>
+        <ul id="diagnostic-list"></ul>
+      </article>
+    </section>
+
+    <section class="panel" aria-labelledby="schools-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">DATA</p>
+          <h2 id="schools-title">初期16校</h2>
+        </div>
+        <p>架空1県。県大会は共通16校トーナメントです。</p>
+      </div>
+      <div id="school-cards" class="school-grid"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="calendar-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">CALENDAR</p>
+          <h2 id="calendar-title">1年間・52週</h2>
+        </div>
+        <p>長期一括スキップではなく、通常は1週ずつ進める前提です。</p>
+      </div>
+      <div class="calendar-legend">
+        <span><i class="legend-dot official"></i>公式戦</span>
+        <span><i class="legend-dot training"></i>育成・準備</span>
+        <span><i class="legend-dot banned"></i>対外試合禁止</span>
+      </div>
+      <div id="calendar-grid" class="calendar-grid"></div>
+    </section>
+
+    <section class="panel rules-panel" aria-labelledby="rules-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">RULE SET</p>
+          <h2 id="rules-title">今回固定した基本ルール</h2>
+        </div>
+      </div>
+      <div class="rule-grid">
+        <div><strong>9回制</strong><span>10回から無死一・二塁</span></div>
+        <div><strong>DHあり</strong><span>投手と打者を分離</span></div>
+        <div><strong>県大会コールド</strong><span>5回10点・7回7点</span></div>
+        <div><strong>投球制限</strong><span>7日間500球＋健康リスク</span></div>
+        <div><strong>雨天処理なし</strong><span>中断・順延・継続試合なし</span></div>
+        <div><strong>高校生は成長期</strong><span>早熟・晩成区分は使わず適性差で表現</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>計算は端末内で完結します。セーブ、クラウド、個人情報送信はまだ実装していません。</p>
+  </footer>
+
+  <script type="module" src="/apps/simulation-lab/src/main.js"></script>
+  <script src="/assets/register-sw.js" defer></script>
+</body>
+</html>

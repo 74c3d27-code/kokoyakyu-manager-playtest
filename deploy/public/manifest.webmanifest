@@ -1,0 +1,21 @@
+{
+  "name": "高校野球監督ゲーム 3年間プレイ検証版",
+  "short_name": "高校野球監督",
+  "description": "16校の高校野球監督として、育成・大会・スカウトを3年間進めるブラウザゲーム検証版です。",
+  "lang": "ja",
+  "start_url": "/manager/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#071710",
+  "theme_color": "#153b2d",
+  "icons": [
+    {"src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ],
+  "shortcuts": [
+    {"name": "監督プレイ", "url": "/manager/", "icons": [{"src": "/assets/icon-192.png", "sizes": "192x192"}]},
+    {"name": "検証室", "url": "/lab/", "icons": [{"src": "/assets/icon-192.png", "sizes": "192x192"}]},
+    {"name": "端末テスト", "url": "/self-test/", "icons": [{"src": "/assets/icon-192.png", "sizes": "192x192"}]}
+  ]
+}

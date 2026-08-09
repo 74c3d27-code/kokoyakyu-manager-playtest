@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#102a20">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <meta name="description" content="高校野球シミュレーション開発版">
+  <title>高校野球シミュレーション開発版</title>
+  <link rel="stylesheet" href="/assets/landing.css">
+</head>
+<body>
+  <main>
+    <p class="eyebrow">KOKOYAKYU PROJECT</p>
+    <h1>高校野球シミュレーション<br>開発・検証版</h1>
+    <p class="lead">3年間を一週ずつ進める監督プレイと、長期バランスを調べるシミュレーション検証室を同じ共通エンジンで動かします。</p>
+    <section class="cards">
+      <a class="card primary" href="/manager/">
+        <span>PLAYTEST</span>
+        <h2>3年間監督プレイ</h2>
+        <p>育成、投手運用、春夏秋、スカウト、選抜評価、卒業までを体験します。</p>
+        <strong>開始する →</strong>
+      </a>
+      <a class="card" href="/lab/">
+        <span>SIMULATION LAB</span>
+        <h2>シミュレーション検証室</h2>
+        <p>複数年・複数回を自動処理し、得点、シード、公私、故障、能力分布を調べます。</p>
+        <strong>検証する →</strong>
+      </a>
+      <a class="card compact" href="/self-test/">
+        <span>DEVICE CHECK</span>
+        <h2>端末セルフテスト</h2>
+        <p>ブラウザだけで16校、52週、3年間完走、保存機能を確認します。</p>
+        <strong>確認する →</strong>
+      </a>
+    </section>
+    <p class="mobile-note">スマートフォンは縦スクロールを基本に、画面下のナビゲーションと「今週を進める」を常時操作できます。ホーム画面への追加にも対応しています。</p>
+    <p class="guide-link"><a href="/guide/">GitHub・Cloudflareの公開／更新手順を見る →</a></p>
+    <footer>v0.3.0 / ブラウザ内で計算・保存。サーバーと課金サービスは使用していません。</footer>
+  </main>
+  <script src="/assets/register-sw.js" defer></script>
+</body>
+</html>

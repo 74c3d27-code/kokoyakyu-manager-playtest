@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102a20"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/icon-192.png"><title>GitHub＋Cloudflare Pages Node.js不要版ガイド</title>
+<style>
+:root{color-scheme:dark;--bg:#071710;--card:#102a20;--card2:#17372a;--line:#315d49;--text:#f3f7f4;--muted:#acc5b8;--accent:#f0cf74;font-family:system-ui,-apple-system,"Segoe UI","Yu Gothic",sans-serif}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--text);background:radial-gradient(circle at 20% -5%,#1d4b38,transparent 34rem),var(--bg);line-height:1.75}main{width:min(980px,calc(100% - 24px));margin:auto;padding:28px 0 calc(70px + env(safe-area-inset-bottom))}h1{font-size:clamp(2rem,6vw,3.8rem);line-height:1.08}h2{margin-top:2.1em;padding-top:.4em;color:var(--accent);border-top:1px solid var(--line)}h3{color:#f9e5a9}p,li{color:var(--muted)}strong{color:var(--text)}code{padding:.15em .42em;border-radius:.4em;background:#06150f;color:#ffe49a}pre{overflow:auto;padding:14px;border:1px solid var(--line);border-radius:12px;background:#06150f;color:#f9e7ad}.table-scroll{overflow-x:auto}table{width:100%;min-width:540px;border-collapse:collapse;background:rgba(16,42,32,.75)}th,td{padding:10px;border:1px solid var(--line);text-align:left}th{color:var(--accent)}hr{margin:32px 0;border:0;border-top:1px solid var(--line)}.top{position:sticky;top:0;z-index:10;padding:8px 12px;border-bottom:1px solid var(--line);background:rgba(7,23,16,.95);backdrop-filter:blur(10px)}.top-inner{width:min(980px,100%);margin:auto;display:flex;justify-content:space-between;gap:8px;align-items:center}.top a{min-height:40px;display:inline-flex;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:9px;color:var(--accent);text-decoration:none;font-size:.75rem}@media(max-width:600px){main{width:min(100% - 16px,980px);padding-top:14px}h1{font-size:2rem}h2{font-size:1.3rem}pre{font-size:.75rem}}
+</style></head><body><div class="top"><div class="top-inner"><strong>v0.3.0 公開ガイド</strong><div><a href="/">入口</a> <a href="/manager/">監督ゲーム</a> <a href="/self-test/">端末確認</a></div></div></div><main><h1>GitHub＋Cloudflare Pages 更新ガイド</h1>
+<h2>高校野球監督ゲーム v0.3.0／Node.js不要版</h2>
+<h2>先に結論</h2>
+<p>今回の版では、Cloudflareにソースコードを変換させません。完成済みのHTML・CSS・JavaScriptをそのまま公開します。</p>
+<p>設定値は次の4つです。</p>
+<div class="table-scroll"><table><thead><tr><th>設定</th><th>値</th></tr></thead><tbody>
+<tr><td>Framework preset</td><td><code>None</code></td></tr>
+<tr><td>Root directory</td><td><code>deploy</code></td></tr>
+<tr><td>Build command</td><td><code>exit 0</code></td></tr>
+<tr><td>Build output directory</td><td><code>public</code></td></tr>
+</tbody></table></div>
+<p>これにより、Cloudflareはリポジトリ直下の古い<code>package.json</code>を見ず、<code>deploy/public/</code>だけをWebサイトとして公開します。</p>
+<hr>
+<h1>1. 今回のエラーについて</h1>
+<p>添付画像では、次のところまでは成功しています。</p>
+<ul>
+<li>Initializing</li>
+<li>Cloning</li>
+<li>Installing</li>
+<li><code>bun install</code></li>
+</ul>
+<p>その後、<code>Executing user build command: npm run build</code>の直後にBuildingが失敗しています。ただし、画像には実際の赤いエラー本文が写っていないため、TypeScript、ファイル位置、権限など、どれが直接原因だったかは断定できません。</p>
+<p>v0.3.0では原因調査を待たず、次の処理を丸ごと不要にしました。</p>
+<ul>
+<li><code>npm install</code></li>
+<li><code>bun install</code></li>
+<li><code>npm run build</code></li>
+<li>Node.js</li>
+<li>TypeScriptコンパイル</li>
+</ul>
+<p>ブラウザ用ファイルはすでに<code>deploy/public/</code>へ完成した状態で入っています。</p>
+<hr>
+<h1>2. ZIPを展開する</h1>
+<ol>
+<li><code>kokoyakyu-manager-nobuild-v0.3.0.zip</code>を右クリックします。</li>
+<li>「すべて展開」を選びます。</li>
+<li>展開後のフォルダを開きます。</li>
+<li>次が見えることを確認します。</li>
+</ol>
+<pre><code>deploy
+README.md
+START_HERE.txt
+CLOUDFLARE_NO_BUILD_GUIDE.html
+MOBILE_TEST_CHECKLIST.txt</code></pre>
+<p><code>deploy</code>の中は次の構造です。</p>
+<pre><code>deploy/
+└─ public/
+   ├─ index.html
+   ├─ manager/
+   ├─ lab/
+   ├─ apps/
+   ├─ packages/
+   ├─ guide/
+   └─ VERSION.txt</code></pre>
+<hr>
+<h1>3. GitHubへ追加する</h1>
+<h2>方法A：GitHub Desktopを使う方法</h2>
+<p>継続更新にはこちらが安全です。</p>
+<ol>
+<li>GitHub Desktopを起動します。</li>
+<li>対象リポジトリを開きます。</li>
+<li><code>Repository</code> → <code>Show in Explorer</code>で作業フォルダを開きます。</li>
+<li>今回のZIPから展開した<code>deploy</code>フォルダを、リポジトリ直下へコピーします。</li>
+<li><code>README.md</code>なども必要に応じて上書きします。</li>
+<li>GitHub Desktopへ戻ります。</li>
+<li>左側のChangesに追加・変更ファイルが表示されます。</li>
+<li>Summaryへ次を入力します。</li>
+</ol>
+<pre><code>v0.3.0 no-build mobile release</code></pre>
+<ol>
+<li><code>Commit to main</code>を押します。</li>
+<li><code>Push origin</code>を押します。</li>
+</ol>
+<h2>方法B：GitHubのWeb画面から追加する方法</h2>
+<ol>
+<li>GitHubで対象リポジトリを開きます。</li>
+<li><code>Add file</code> → <code>Upload files</code>を押します。</li>
+<li>展開した<code>deploy</code>フォルダをアップロード欄へドラッグします。</li>
+<li>最終的にGitHub上で次の場所が見えることを確認します。</li>
+</ol>
+<pre><code>deploy/public/index.html</code></pre>
+<ol>
+<li>コミットメッセージへ次を入力します。</li>
+</ol>
+<pre><code>v0.3.0 no-build mobile release</code></pre>
+<ol>
+<li><code>Commit changes</code>を押します。</li>
+</ol>
+<h3>古いファイルについて</h3>
+<p>以前の次のファイルがリポジトリに残っていても、ひとまず削除しなくて構いません。</p>
+<pre><code>package.json
+.node-version
+apps
+packages
+scripts
+tsconfig.json</code></pre>
+<p>CloudflareのRoot directoryを<code>deploy</code>へ変更するため、それらは公開処理で使用されなくなります。</p>
+<hr>
+<h1>4. Cloudflareの設定を変更する</h1>
+<ol>
+<li>Cloudflareへログインします。</li>
+<li><code>Workers &amp; Pages</code>を開きます。</li>
+<li>対象の高校野球プロジェクトを開きます。</li>
+<li>上部の<code>Settings</code>を押します。</li>
+<li><code>Builds &amp; deployments</code>またはBuild configurationに相当する項目を開きます。</li>
+<li><code>Edit configuration</code>を押します。</li>
+<li>次の値へ変更します。</li>
+</ol>
+<div class="table-scroll"><table><thead><tr><th>項目</th><th>入力値</th></tr></thead><tbody>
+<tr><td>Framework preset</td><td><code>None</code></td></tr>
+<tr><td>Production branch</td><td><code>main</code></td></tr>
+<tr><td>Root directory</td><td><code>deploy</code></td></tr>
+<tr><td>Build command</td><td><code>exit 0</code></td></tr>
+<tr><td>Build output directory</td><td><code>public</code></td></tr>
+<tr><td>Build variables</td><td>なし</td></tr>
+</tbody></table></div>
+<ol>
+<li>保存します。</li>
+</ol>
+<h2>大切な点</h2>
+<p><code>Root directory</code>は空欄ではなく、必ず次です。</p>
+<pre><code>deploy</code></pre>
+<p><code>Build output directory</code>は次です。</p>
+<pre><code>public</code></pre>
+<p>Cloudflareから見ると、公開対象は実質的に次の場所になります。</p>
+<pre><code>deploy/public</code></pre>
+<hr>
+<h1>5. 新しいDeploymentを確認する</h1>
+<p>GitHubへコミットを送ると、Cloudflare側で新しいDeploymentが始まります。</p>
+<p>成功時は次の順で緑になります。</p>
+<pre><code>Initializing
+Cloning
+Building
+Deploying</code></pre>
+<p>今回の版では、ログ中に次を実行させる必要はありません。</p>
+<pre><code>npm run build
+bun install
+npm install</code></pre>
+<p>Build commandは<code>exit 0</code>だけです。</p>
+<p>新しいDeploymentが自動で始まらない場合は、設定保存後にGitHubでREADMEへ空白を一つ加えるなど、小さなコミットを送ってください。</p>
+<hr>
+<h1>6. 公開確認</h1>
+<p>発行された<code>pages.dev</code>のURLで、次を順に開きます。</p>
+<pre><code>https://プロジェクト名.pages.dev/
+https://プロジェクト名.pages.dev/manager/
+https://プロジェクト名.pages.dev/lab/
+https://プロジェクト名.pages.dev/guide/
+https://プロジェクト名.pages.dev/VERSION.txt</code></pre>
+<p><code>VERSION.txt</code>に次が表示されれば更新済みです。</p>
+<pre><code>kokoyakyu-manager-playtest v0.3.0</code></pre>
+<h2>404になる場合</h2>
+<p>GitHubで次のファイル位置を確認します。</p>
+<pre><code>deploy/public/index.html</code></pre>
+<p>Cloudflare設定を確認します。</p>
+<pre><code>Root directory: deploy
+Build output directory: public</code></pre>
+<h2>古い画面が残る場合</h2>
+<ol>
+<li>ブラウザのページを再読込します。</li>
+<li>スマートフォンではタブを完全に閉じて開き直します。</li>
+<li>それでも古い場合は、プライベートブラウズで<code>VERSION.txt</code>を開きます。</li>
+</ol>
+<hr>
+<h1>7. スマートフォン画面</h1>
+<p>監督ゲームでは、幅760px以下でスマートフォン向け表示へ切り替わります。</p>
+<h2>下部ナビゲーション</h2>
+<p>画面下に次の6タブが固定されます。</p>
+<pre><code>週　選　育　大　勧　保</code></pre>
+<p>意味は次のとおりです。</p>
+<div class="table-scroll"><table><thead><tr><th>表示</th><th>画面</th></tr></thead><tbody>
+<tr><td>週</td><td>ホーム・週間状況</td></tr>
+<tr><td>選</td><td>選手一覧</td></tr>
+<tr><td>育</td><td>育成・投手起用</td></tr>
+<tr><td>大</td><td>大会・年度成績</td></tr>
+<tr><td>勧</td><td>スカウト</td></tr>
+<tr><td>保</td><td>保存・説明</td></tr>
+</tbody></table></div>
+<p>「今週を進める」ボタンは、そのナビゲーションの一段上に固定されます。</p>
+<h2>選手一覧</h2>
+<p>PCでは横長の表、スマートフォンでは選手ごとのカードになります。</p>
+<p>カードでは次を確認できます。</p>
+<ul>
+<li>学年と守備位置</li>
+<li>打撃5能力</li>
+<li>投手候補の投手4能力</li>
+<li>守備位置適性</li>
+<li>疲労と故障リスク</li>
+<li>伸びしろ</li>
+</ul>
+<h2>画面回転</h2>
+<p>縦向きと横向きの両方で操作できます。横向きでは下部ナビゲーションと進行ボタンを少し低くし、表示領域を確保します。</p>
+<hr>
+<h1>8. セーブについて</h1>
+<p>セーブは毎週、ブラウザ内へ自動保存されます。</p>
+<p>ただし、次の場合は同じセーブが見えません。</p>
+<ul>
+<li>別のスマートフォン</li>
+<li>別のブラウザ</li>
+<li>別のドメイン</li>
+<li>ブラウザのサイトデータを削除した場合</li>
+</ul>
+<p>端末を移すときは、ゲーム内の<code>保</code> → <code>JSONバックアップ</code>を使います。</p>
+<ol>
+<li>元端末で「セーブを書き出す」</li>
+<li>JSONファイルを新端末へ送る</li>
+<li>新端末で「セーブを読み込む」</li>
+</ol>
+<hr>
+<h1>9. 最初の検証手順</h1>
+<ol>
+<li>公立中堅校を選びます。</li>
+<li>世界シードを変更せず開始します。</li>
+<li>数週間は「総合・標準」で進めます。</li>
+<li><code>育</code>で投手運用を健康優先へ変更します。</li>
+<li>遊撃手または捕手へのコンバートを指定します。</li>
+<li>春大会ベスト4と夏シードを確認します。</li>
+<li>夏敗退後の新チームを確認します。</li>
+<li>秋大会と選抜評価を確認します。</li>
+<li><code>勧</code>で候補を最大3人選びます。</li>
+<li>年度末の卒業、進級、新入生を確認します。</li>
+<li>3年間、156週を完走します。</li>
+<li><code>保</code>からセーブJSONを書き出します。</li>
+</ol>
+<p>スマートフォンの確認項目は<code>MOBILE_TEST_CHECKLIST.txt</code>をご利用ください。</p></main><script src="/assets/register-sw.js" defer></script></body></html>
